@@ -30,7 +30,7 @@ export function LoginForm() {
         </Link>
       </p>
 
-      <p className="mt-28 text-center text-xs font-semibold uppercase tracking-[0.12em] text-luxe-line">© 2026 LUMINA. All rights reserved.</p>
+      <p className="mt-28 text-center text-xs font-semibold uppercase tracking-[0.12em] text-luxe-line">© 2025 LUMINA. All rights reserved.</p>
     </div>
   );
 }

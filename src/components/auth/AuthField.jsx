@@ -6,14 +6,9 @@ export function AuthField({ label, type = "text", placeholder, icon, helper, err
         {helper ? <span className="text-xs font-semibold text-luxe-gold">{helper}</span> : null}
       </div>
       <div
-<<<<<<< HEAD
         className={`flex h-12 items-center border bg-white px-4 transition focus-within:border-luxe-gold ${
           error ? "border-red-400" : "border-luxe-line"
         }`}
-=======
-        className={`flex h-12 items-center border bg-white px-4 transition focus-within:border-luxe-gold ${error ? "border-red-400" : "border-luxe-line"
-          }`}
->>>>>>> bcad2414d04f80bc42c2d31c25414c077cfd9c41
       >
         <input
           className="min-w-0 flex-1 bg-transparent text-sm text-luxe-ink outline-none placeholder:text-luxe-line"

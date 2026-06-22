@@ -1,174 +1,15 @@
-<<<<<<< HEAD
-=======
-// import { Link } from "react-router-dom";
-// import { AuthField } from "./AuthField";
-
-// export function RegisterForm() {
-//   return (
-//     <div className="w-full max-w-md">
-//       <h1 className="font-display text-3xl font-bold tracking-normal text-luxe-ink">Tạo tài khoản mới</h1>
-//       <p className="mt-3 text-sm leading-6 text-luxe-mutedText">Chào mừng bạn đến với cộng đồng LUMINA.</p>
-
-//       <form className="mt-8 space-y-5">
-//         <AuthField label="Họ và tên" placeholder="Nguyễn Văn A" />
-//         <AuthField label="Email" type="email" placeholder="example@lumina.com" />
-//         <AuthField label="Số điện thoại" type="tel" placeholder="090 1234 567" />
-//         <AuthField label="Mật khẩu" type="password" placeholder="••••••••" icon="◉" />
-//         <AuthField label="Xác nhận mật khẩu" type="password" placeholder="••••••••" />
-
-//         <label className="flex items-start gap-3 text-sm leading-6 text-luxe-mutedText">
-//           <input className="mt-1 h-4 w-4 border-luxe-line accent-luxe-primary" type="checkbox" />
-//           <span>
-//             Tôi đồng ý với các <a className="font-semibold text-luxe-ink" href="/">Điều khoản sử dụng</a> và{" "}
-//             <a className="font-semibold text-luxe-ink" href="/">Chính sách bảo mật</a> của LUMINA.
-//           </span>
-//         </label>
-
-//         <button className="h-12 w-full bg-luxe-primary text-sm font-bold uppercase tracking-[0.16em] text-white transition hover:bg-luxe-primarySoft" type="submit">
-//           Đăng ký
-//         </button>
-//       </form>
-
-//       <p className="mt-8 text-center text-sm text-luxe-mutedText">
-//         Đã có tài khoản?{" "}
-//         <Link className="font-bold text-luxe-ink transition hover:text-luxe-primarySoft" to="/login">
-//           Đăng nhập
-//         </Link>
-//       </p>
-
-//       <div className="mt-12 flex justify-center gap-8 text-xs font-semibold uppercase tracking-[0.12em] text-luxe-mutedText">
-//         <a href="/">Hỗ trợ</a>
-//         <a href="/">Ngôn ngữ Tiếng Việt</a>
-//       </div>
-//     </div>
-//   );
-// }
-
->>>>>>> bcad2414d04f80bc42c2d31c25414c077cfd9c41
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { signUp } from "../../services/api/authService";
+import { authStore } from "../../stores/authStore";
 import { AuthField } from "./AuthField";
 
 export function RegisterForm() {
-<<<<<<< HEAD
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm();
+    const navigate = useNavigate();
+    const [serverError, setServerError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit = (data) => {
-    // TODO: Gọi API register với data
-    console.log(data);
-  };
-
-  return (
-    <div className="w-full max-w-md">
-      <h1 className="font-display text-3xl font-bold tracking-normal text-luxe-ink">Tạo tài khoản mới</h1>
-      <p className="mt-3 text-sm leading-6 text-luxe-mutedText">Chào mừng bạn đến với cộng đồng LUMINA.</p>
-
-      <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)}>
-        <AuthField
-          label="Họ và tên"
-          placeholder="Nguyễn Văn A"
-          error={errors.fullName?.message}
-          registration={register("fullName", {
-            required: "Họ và tên không được để trống",
-            minLength: {
-              value: 2,
-              message: "Họ và tên phải có ít nhất 2 ký tự",
-            },
-          })}
-        />
-
-        <AuthField
-          label="Email"
-          type="email"
-          placeholder="example@lumina.com"
-          error={errors.email?.message}
-          registration={register("email", {
-            required: "Email không được để trống",
-            pattern: {
-              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Email không đúng định dạng",
-            },
-          })}
-        />
-
-        <AuthField
-          label="Số điện thoại"
-          type="tel"
-          placeholder="090 1234 567"
-          error={errors.phone?.message}
-          registration={register("phone", {
-            required: "Số điện thoại không được để trống",
-            pattern: {
-              value: /^(0|\+84)[3-9]\d{8}$/,
-              message: "Số điện thoại không đúng định dạng",
-            },
-          })}
-        />
-
-        <AuthField
-          label="Mật khẩu"
-          type="password"
-          placeholder="••••••••"
-          icon="◉"
-          error={errors.password?.message}
-          registration={register("password", {
-            required: "Mật khẩu không được để trống",
-            minLength: {
-              value: 6,
-              message: "Mật khẩu phải có ít nhất 6 ký tự",
-            },
-          })}
-        />
-
-        <AuthField
-          label="Xác nhận mật khẩu"
-          type="password"
-          placeholder="••••••••"
-          error={errors.confirmPassword?.message}
-          registration={register("confirmPassword", {
-            required: "Vui lòng xác nhận mật khẩu",
-            validate: (value) =>
-              value === watch("password") || "Mật khẩu xác nhận không khớp",
-          })}
-        />
-
-        <label className="flex items-start gap-3 text-sm leading-6 text-luxe-mutedText">
-          <input
-            className="mt-1 h-4 w-4 border-luxe-line accent-luxe-primary"
-            type="checkbox"
-            {...register("agreeTerms", {
-              required: "Bạn cần đồng ý với điều khoản để tiếp tục",
-            })}
-          />
-          <span>
-            Tôi đồng ý với các{" "}
-            <a className="font-semibold text-luxe-ink" href="/">
-              Điều khoản sử dụng
-            </a>{" "}
-            và{" "}
-            <a className="font-semibold text-luxe-ink" href="/">
-              Chính sách bảo mật
-            </a>{" "}
-            của LUMINA.
-          </span>
-        </label>
-        {errors.agreeTerms ? (
-          <p className="-mt-3 text-xs text-red-500">{errors.agreeTerms.message}</p>
-        ) : null}
-
-        <button
-          className="h-12 w-full bg-luxe-primary text-sm font-bold uppercase tracking-[0.16em] text-white transition hover:bg-luxe-primarySoft"
-          type="submit"
-        >
-          Đăng ký
-        </button>
-      </form>
-=======
     const {
         register,
         handleSubmit,
@@ -176,31 +17,40 @@ export function RegisterForm() {
         formState: { errors },
     } = useForm();
 
-    const onSubmit = (data) => {
-        // Gọi API register với data
-        console.log(data);
+    const onSubmit = async (data) => {
+        setServerError("");
+        setIsLoading(true);
+
+        try {
+            const response = await signUp({
+                email: data.email,
+                password: data.password,
+            });
+
+            authStore.save(response);
+
+            navigate("/");
+        } catch (error) {
+            // Lỗi BE: { status, message, timestamp }
+            // 409 Conflict: email đã tồn tại
+            const message =
+                error.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại.";
+            setServerError(message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
         <div className="w-full max-w-md">
-            <h1 className="font-display text-3xl font-bold tracking-normal text-luxe-ink">Tạo tài khoản mới</h1>
-            <p className="mt-3 text-sm leading-6 text-luxe-mutedText">Chào mừng bạn đến với cộng đồng LUMINA.</p>
+            <h1 className="font-display text-3xl font-bold tracking-normal text-luxe-ink">
+                Tạo tài khoản mới
+            </h1>
+            <p className="mt-3 text-sm leading-6 text-luxe-mutedText">
+                Chào mừng bạn đến với cộng đồng LUMINA.
+            </p>
 
             <form className="mt-8 space-y-5" onSubmit={handleSubmit(onSubmit)}>
-                <AuthField
-                    label="Họ và tên"
-                    placeholder="Nguyễn Văn A"
-                    error={errors.fullName?.message}
-                    registration={register("fullName", {
-                        required: "Họ và tên không được để trống",
-                        minLength: {
-                            value: 2,
-                            message: "Họ và tên phải có ít nhất 2 ký tự",
-                        },
-                    })}
-                />
->>>>>>> bcad2414d04f80bc42c2d31c25414c077cfd9c41
-
                 <AuthField
                     label="Email"
                     type="email"
@@ -215,39 +65,17 @@ export function RegisterForm() {
                     })}
                 />
 
-<<<<<<< HEAD
-      <div className="mt-12 flex justify-center gap-8 text-xs font-semibold uppercase tracking-[0.12em] text-luxe-mutedText">
-        <a href="/">Hỗ trợ</a>
-        <a href="/">Ngôn ngữ Tiếng Việt</a>
-      </div>
-    </div>
-  );
-=======
-                <AuthField
-                    label="Số điện thoại"
-                    type="tel"
-                    placeholder="090 1234 567"
-                    error={errors.phone?.message}
-                    registration={register("phone", {
-                        required: "Số điện thoại không được để trống",
-                        pattern: {
-                            value: /^(0|\+84)[3-9]\d{8}$/,
-                            message: "Số điện thoại không đúng định dạng",
-                        },
-                    })}
-                />
-
                 <AuthField
                     label="Mật khẩu"
                     type="password"
                     placeholder="••••••••"
-                    icon="◉"
+                    icon=""
                     error={errors.password?.message}
                     registration={register("password", {
                         required: "Mật khẩu không được để trống",
                         minLength: {
-                            value: 6,
-                            message: "Mật khẩu phải có ít nhất 6 ký tự",
+                            value: 8,
+                            message: "Mật khẩu phải có ít nhất 8 ký tự",
                         },
                     })}
                 />
@@ -288,17 +116,26 @@ export function RegisterForm() {
                     <p className="-mt-3 text-xs text-red-500">{errors.agreeTerms.message}</p>
                 ) : null}
 
+                {/* Lỗi trả về từ server */}
+                {serverError ? (
+                    <p className="rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
+                        {serverError}
+                    </p>
+                ) : null}
+
                 <button
-                    className="h-12 w-full bg-luxe-primary text-sm font-bold uppercase tracking-[0.16em] text-white transition hover:bg-luxe-primarySoft"
+                    className="h-12 w-full bg-luxe-primary text-sm font-bold uppercase tracking-[0.16em] text-white transition hover:bg-luxe-primarySoft disabled:opacity-60"
                     type="submit"
+                    disabled={isLoading}
                 >
-                    Đăng ký
+                    {isLoading ? "Đang đăng ký..." : "Đăng ký"}
                 </button>
             </form>
 
             <p className="mt-8 text-center text-sm text-luxe-mutedText">
                 Đã có tài khoản?{" "}
-                <Link className="font-bold text-luxe-ink transition hover:text-luxe-primarySoft" to="/login">
+                <Link
+                    className="font-bold text-luxe-ink transition hover:text-luxe-primarySoft" to="/login" >
                     Đăng nhập
                 </Link>
             </p>
@@ -309,5 +146,4 @@ export function RegisterForm() {
             </div>
         </div>
     );
->>>>>>> bcad2414d04f80bc42c2d31c25414c077cfd9c41
 }

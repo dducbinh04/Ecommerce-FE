@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -45,6 +46,15 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
 
             .authorizeHttpRequests(auth -> auth
+
+                .requestMatchers(SWAGGER)
+                .permitAll()
+
+                .requestMatchers(API_DOC)
+                .permitAll()
+                .requestMatchers(HttpMethod.GET,
+                        PRODUCTS+"/{id}",
+                        PRODUCTS + "/search").permitAll()
                 .requestMatchers(
                     AUTH_SIGN_UP,
                     AUTH_SIGN_IN,

@@ -47,7 +47,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAccessDeniedHandler accessDeniedHandler;
 
-    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:3000}")
+    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:8080}")
     private String allowedOrigins;
 
     @Bean
@@ -92,13 +92,39 @@ public class SecurityConfig {
 
         return http.build();
     }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        return request -> {
+            CorsConfiguration config = new CorsConfiguration();
+
+            config.setAllowedOrigins(
+                    Arrays.stream(allowedOrigins.split(","))
+                            .map(String::trim)
+                            .toList()
+            );
+
+            config.setAllowedMethods(List.of(
+                    "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
+            ));
+
+            config.setAllowedHeaders(List.of("*"));
+
+            // nếu FE gửi Authorization header thì nên để true
+            config.setAllowCredentials(true);
+
+            // nếu FE cần đọc header Authorization trả về thì expose nó
+            config.setExposedHeaders(List.of("Authorization"));
+
+            return config;
+        };
+    }
     // @Bean
     // public CorsConfigurationSource corsConfigurationSource() {
     //     return request -> {
     //         CorsConfiguration config = new CorsConfiguration();
 
     //         config.setAllowedOrigins(
-    //                 Arrays.stream(allowedOrigins.split(","))
+    //                 Arrays.stream(corsConfig.getAllowedOrigins().split(","))
     //                         .map(String::trim)
     //                         .toList()
     //         );
@@ -109,27 +135,13 @@ public class SecurityConfig {
 
     //         config.setAllowedHeaders(List.of("*"));
 
-    //         // nếu FE gửi Authorization header thì nên để true
     //         config.setAllowCredentials(true);
 
-    //         // nếu FE cần đọc header Authorization trả về thì expose nó
     //         config.setExposedHeaders(List.of("Authorization"));
 
     //         return config;
     //     };
     // }
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

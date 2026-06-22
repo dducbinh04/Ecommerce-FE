@@ -48,23 +48,21 @@ public class ProductServiceImpl implements ProductService {
        return productMapper.toResponse(product);
     }
     @Transactional
-    public ProductResponse createProduct(CreateProductRequest createProductRequest,
-                                         MultipartFile file,
-                                         String imageUrl) throws IOException {
+    public ProductResponse createProduct(CreateProductRequest createProductRequest) throws IOException {
         Product product = productMapper.toEntity(createProductRequest);
         Category category =  categoryRepository.findById(createProductRequest.getCategoryId()).orElseThrow(()->new ResourceNotFoundException("Category not found"));
         product.setCategory(category);
 
         product = productRepository.save(product);
 
-        boolean hasFile = file!=null && !file.isEmpty();
-        boolean hasImageUrl = imageUrl!=null && !imageUrl.isBlank();
+        boolean hasFile = createProductRequest.getFile()!=null && !createProductRequest.getFile().isEmpty();
+        boolean hasImageUrl = createProductRequest.getImageUrl()!=null && !createProductRequest.getImageUrl().isBlank();
         if(hasFile && hasImageUrl){
             throw new BadRequestException("File and Image Url are mutually exclusive");
         }
         if(hasFile){
             try{
-            String url = cloudinaryService.uploadImage(product.getId(),file);
+            String url = cloudinaryService.uploadImage(product.getId(),createProductRequest.getFile());
             product.setImageUrl(url);
             }
             catch(IOException e){
@@ -74,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
         }
         else if(hasImageUrl){
             try{
-                String url = cloudinaryService.uploadImage(product.getId(),imageUrl);
+                String url = cloudinaryService.uploadImage(product.getId(),createProductRequest.getImageUrl());
                 product.setImageUrl(url);
             }
             catch(IOException e){
@@ -87,9 +85,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductResponse updateProduct(
             UUID id,
-            UpdateProductRequest updateProductRequest,
-            MultipartFile file,
-            String imageUrl) throws IOException {
+            UpdateProductRequest updateProductRequest) throws IOException {
         Product product = productRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Product not found"));
         if(updateProductRequest.getCategoryId()!=null){
             Category category =  categoryRepository.findById(updateProductRequest.getCategoryId()).orElseThrow(()->new RuntimeException("Category not found"));
@@ -97,14 +93,14 @@ public class ProductServiceImpl implements ProductService {
         }
         productMapper.updateEntity(updateProductRequest, product);
 
-        boolean hasFile = file!=null && !file.isEmpty();
-        boolean hasImageUrl = imageUrl!=null && !imageUrl.isBlank();
+        boolean hasFile = updateProductRequest.getFile()!=null && !updateProductRequest.getFile().isEmpty();
+        boolean hasImageUrl = updateProductRequest.getImageUrl()!=null && !updateProductRequest.getImageUrl().isBlank();
         if(hasFile && hasImageUrl){
             throw new BadRequestException("File and Image Url are mutually exclusive");
         }
         if(hasFile){
             try{
-                String url = cloudinaryService.uploadImage(product.getId(),file);
+                String url = cloudinaryService.uploadImage(product.getId(),updateProductRequest.getFile());
                 product.setImageUrl(url);
             }
             catch(IOException e){
@@ -114,7 +110,7 @@ public class ProductServiceImpl implements ProductService {
         }
         else if(hasImageUrl){
             try{
-                String url = cloudinaryService.uploadImage(product.getId(),imageUrl);
+                String url = cloudinaryService.uploadImage(product.getId(),updateProductRequest.getImageUrl());
                 product.setImageUrl(url);
             }
             catch(IOException e){
@@ -124,16 +120,25 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.toResponse(productRepository.save(product));
     }
     public void deleteImage(UUID id) throws IOException {
+        Product product = productRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Product not found"));
         try{
             cloudinaryService.deleteImage(id);
         }
         catch(IOException e){
             throw new IOException("Error Deleting Image");
         }
+        product.setImageUrl(null);
+        productRepository.save(product);
     }
-    public void deleteProduct(UUID id) {
+    public void deleteProduct(UUID id) throws IOException {
         if(!productRepository.existsById(id)) {
             throw new ResourceNotFoundException("Product not found");
+        }
+        try{
+            cloudinaryService.deleteImage(id);
+        }
+        catch(IOException e){
+            throw new IOException("Error Deleting Image");
         }
         productRepository.deleteById(id);
     }

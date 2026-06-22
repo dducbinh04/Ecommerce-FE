@@ -7,6 +7,7 @@ import com.example.Product_Catalog_Management.helper.AuthHelper;
 import com.example.Product_Catalog_Management.security.CustomUserDetails;
 import com.example.Product_Catalog_Management.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

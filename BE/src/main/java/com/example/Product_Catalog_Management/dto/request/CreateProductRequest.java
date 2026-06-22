@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 @AllArgsConstructor
@@ -23,4 +24,7 @@ public class CreateProductRequest {
     @Min(0)
     private Integer quantity;
     private UUID categoryId;
+
+    private MultipartFile file;
+    private String imageUrl;
 }

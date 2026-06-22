@@ -12,9 +12,9 @@ import java.io.IOException;
 import java.util.UUID;
 
 public interface ProductService {
-    ProductResponse createProduct(CreateProductRequest addProductRequest, MultipartFile file, String imageUrl) throws IOException;
-    ProductResponse updateProduct(UUID id, UpdateProductRequest updateProductRequest, MultipartFile file, String imageUrl) throws IOException;
-    void deleteProduct(UUID id);
+    ProductResponse createProduct(CreateProductRequest addProductRequest) throws IOException;
+    ProductResponse updateProduct(UUID id, UpdateProductRequest updateProductRequest) throws IOException;
+    void deleteProduct(UUID id) throws IOException;
     ProductResponse getProductById(UUID id);
     Page<ProductResponse> getProducts(int page, int size, String sortBy, String sortDirection);
     Page<ProductResponse> findByCriteria(String name, UUID categoryId, Pageable pageable);

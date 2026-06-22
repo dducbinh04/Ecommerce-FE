@@ -40,23 +40,19 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<ProductResponse> createProduct(
-            @RequestBody CreateProductRequest createProductRequest,
-            @RequestParam(required = false) MultipartFile file,
-            @RequestParam(required = false) String imageUrl) throws IOException {
-        return ResponseEntity.ok(productService.createProduct(createProductRequest, file, imageUrl));
+            @ModelAttribute CreateProductRequest createProductRequest) throws IOException {
+        return ResponseEntity.ok(productService.createProduct(createProductRequest));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable UUID id,
-            @RequestBody UpdateProductRequest updateProductRequest,
-            @RequestParam(required = false) MultipartFile file,
-            @RequestParam(required = false) String imageUrl) throws IOException {
-        return ResponseEntity.ok(productService.updateProduct(id, updateProductRequest, file, imageUrl));
+            @ModelAttribute UpdateProductRequest updateProductRequest) throws IOException {
+        return ResponseEntity.ok(productService.updateProduct(id, updateProductRequest));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable UUID id) {
+    public ResponseEntity<?> deleteProduct(@PathVariable UUID id) throws IOException {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }

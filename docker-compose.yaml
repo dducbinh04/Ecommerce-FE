@@ -1,0 +1,19 @@
+services:
+  backend-service:
+    build:
+      context: ./BE
+      dockerfile: Dockerfile
+    container_name: ecom-backend_local
+    working_dir: /app
+    ports:
+      - "8080:8080"
+    environment:
+      JAVA_TOOL_OPTIONS: -Djava.net.preferIPv4Stack=true
+    env_file:
+      - ./BE/.env
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

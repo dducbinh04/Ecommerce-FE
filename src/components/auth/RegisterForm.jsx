@@ -55,6 +55,7 @@ export function RegisterForm() {
                     label="Email"
                     type="email"
                     placeholder="example@lumina.com"
+                    icon="✉"
                     error={errors.email?.message}
                     registration={register("email", {
                         required: "Email không được để trống",

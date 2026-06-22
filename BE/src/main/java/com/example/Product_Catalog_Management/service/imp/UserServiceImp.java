@@ -63,7 +63,8 @@ public class UserServiceImp implements UserService {
         return userRepository.existsByEmail(email);
     }
 
-    private User getUserById(UUID id) {
+    @Override
+    public User getUserById(UUID id) {
         return userRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }

@@ -13,5 +13,6 @@ public interface UserService {
     UpdateUserProfileResponse updateProfile(UUID userId, UpdateUserProfileRequest req);
     GetUserProfileResponse getUserProfile(UUID userId);
     User getUserByEmail(String email);
+    User getUserById(UUID id);
     boolean existsUser(String email);
 }

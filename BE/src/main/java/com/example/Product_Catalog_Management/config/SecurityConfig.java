@@ -7,12 +7,14 @@ import com.example.Product_Catalog_Management.security.JwtAuthenticationEntryPoi
 import com.example.Product_Catalog_Management.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,6 +27,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static com.example.Product_Catalog_Management.constant.ApiPath.*;
 
@@ -40,10 +47,14 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAccessDeniedHandler accessDeniedHandler;
 
+    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:3000}")
+    private String allowedOrigins;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
 
             .authorizeHttpRequests(auth -> auth
 
@@ -55,6 +66,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET,
                         PRODUCTS+"/{id}",
                         PRODUCTS + "/search").permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                 .requestMatchers(
                     AUTH_SIGN_UP,
                     AUTH_SIGN_IN,
@@ -79,6 +91,44 @@ public class SecurityConfig {
             );
 
         return http.build();
+    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        return request -> {
+            CorsConfiguration config = new CorsConfiguration();
+
+            config.setAllowedOrigins(
+                    Arrays.stream(allowedOrigins.split(","))
+                            .map(String::trim)
+                            .toList()
+            );
+
+            config.setAllowedMethods(List.of(
+                    "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
+            ));
+
+            config.setAllowedHeaders(List.of("*"));
+
+            // nếu FE gửi Authorization header thì nên để true
+            config.setAllowCredentials(true);
+
+            // nếu FE cần đọc header Authorization trả về thì expose nó
+            config.setExposedHeaders(List.of("Authorization"));
+
+            return config;
+        };
+    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 
     @Bean

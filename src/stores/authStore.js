@@ -10,7 +10,7 @@ const KEYS = {
 }
 
 export const authStore = {
-    // Lưu Token sau khi đăng nhập / đăng ký
+    // Lưu Token
     save ({accessToken, refreshToken, role}) {
         localStorage.setItem(KEYS.accessToken, accessToken);
         localStorage.setItem(KEYS.refreshToken, refreshToken);

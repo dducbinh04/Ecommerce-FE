@@ -28,7 +28,7 @@ spring:
           use_jdbc_metadata_defaults: false
         boot:
           allow_jdbc_metadata_access: false
-    show-sql: false
+    show-sql: true
 
   data:
     redis:

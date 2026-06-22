@@ -20,6 +20,7 @@ import static com.example.Product_Catalog_Management.constant.ApiPath.AUTH;
 @RestController
 @RequestMapping(AUTH)
 @RequiredArgsConstructor
+@CrossOrigin("http://localhost:5173")
 public class AuthController {
 
     private final AuthService authService;

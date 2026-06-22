@@ -28,7 +28,7 @@ export function LoginForm() {
 
             authStore.save(response);
 
-            // Redirect theo role
+            // Redirect
             if (response.role === "ADMIN") {
                 navigate("/admin");
             } else {

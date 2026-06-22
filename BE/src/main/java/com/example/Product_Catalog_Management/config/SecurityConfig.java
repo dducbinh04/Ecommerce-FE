@@ -92,32 +92,32 @@ public class SecurityConfig {
 
         return http.build();
     }
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        return request -> {
-            CorsConfiguration config = new CorsConfiguration();
+    // @Bean
+    // public CorsConfigurationSource corsConfigurationSource() {
+    //     return request -> {
+    //         CorsConfiguration config = new CorsConfiguration();
 
-            config.setAllowedOrigins(
-                    Arrays.stream(allowedOrigins.split(","))
-                            .map(String::trim)
-                            .toList()
-            );
+    //         config.setAllowedOrigins(
+    //                 Arrays.stream(allowedOrigins.split(","))
+    //                         .map(String::trim)
+    //                         .toList()
+    //         );
 
-            config.setAllowedMethods(List.of(
-                    "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
-            ));
+    //         config.setAllowedMethods(List.of(
+    //                 "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
+    //         ));
 
-            config.setAllowedHeaders(List.of("*"));
+    //         config.setAllowedHeaders(List.of("*"));
 
-            // nếu FE gửi Authorization header thì nên để true
-            config.setAllowCredentials(true);
+    //         // nếu FE gửi Authorization header thì nên để true
+    //         config.setAllowCredentials(true);
 
-            // nếu FE cần đọc header Authorization trả về thì expose nó
-            config.setExposedHeaders(List.of("Authorization"));
+    //         // nếu FE cần đọc header Authorization trả về thì expose nó
+    //         config.setExposedHeaders(List.of("Authorization"));
 
-            return config;
-        };
-    }
+    //         return config;
+    //     };
+    // }
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

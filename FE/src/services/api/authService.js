@@ -24,7 +24,7 @@ export function signUp(data, options = {}) {
     return request("/api/v1/auth/signup", {
         ...options,
         method: "POST",
-        body: JSON.stringify({ ...data, role: "CUSTOMER" }),
+        body: JSON.stringify(data),
     });
 }
 

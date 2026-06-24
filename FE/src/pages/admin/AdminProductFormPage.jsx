@@ -1,55 +1,190 @@
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { AdminShell } from "../../components/admin-layout/AdminShell";
 import { ProductBasicForm } from "../../components/admin-products/ProductBasicForm";
-import { ProductCommercialPanel } from "../../components/admin-products/ProductCommercialPanel";
 import { ProductFormActions } from "../../components/admin-products/ProductFormActions";
-import { ProductMediaPanel } from "../../components/admin-products/ProductMediaPanel";
-import { ProductSidePanels } from "../../components/admin-products/ProductSidePanels";
-import { blankProduct, editableProduct } from "../../components/admin-products/adminProductData";
+import { blankProduct, editableProduct, productCategories } from "../../components/admin-products/adminProductData";
+import { deleteProduct, getCategories, getProductById, postProduct, putProduct } from "../../services/api/api.js";
+
+function normalizeCategories(data) {
+  const items = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : null;
+
+  if (!items) {
+    return productCategories;
+  }
+
+  return items.map((category, index) => ({
+    id: category.id ?? category._id ?? String(index + 1),
+    name: category.name ?? "Không có tên",
+  }));
+}
+
+function normalizeProduct(data) {
+  const productData = data?.data ?? data;
+
+  if (!productData) {
+    return blankProduct;
+  }
+
+  return {
+    id: productData.id ?? productData._id ?? "",
+    name: productData.name ?? "",
+    description: productData.description ?? "",
+    price: productData.price ?? "",
+    quantity: productData.quantity ?? "",
+    imageUrl: productData.imageUrl ?? "",
+    categoryId: productData.categoryId ?? "",
+  };
+}
 
 export function AdminProductFormPage({ mode = "create" }) {
   const { id } = useParams();
+  const navigate = useNavigate();
   const isEdit = mode === "edit";
-  const product = isEdit ? editableProduct : blankProduct;
+  const [product, setProduct] = useState(isEdit ? editableProduct : blankProduct);
+  const [categories, setCategories] = useState(productCategories);
+  const [formError, setFormError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    let isActive = true;
+
+    async function loadCategories() {
+      try {
+        const data = await getCategories();
+        if (isActive) {
+          setCategories(normalizeCategories(data));
+        }
+      } catch (error) {
+        console.error("Error loading categories for product form:", error);
+        if (isActive) {
+          setCategories(productCategories);
+        }
+      }
+    }
+
+    loadCategories();
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isActive = true;
+
+    async function loadProduct() {
+      if (!isEdit || !id) {
+        return;
+      }
+
+      try {
+        const data = await getProductById(id);
+        if (isActive) {
+          setProduct(normalizeProduct(data));
+        }
+      } catch (error) {
+        console.error("Error loading product:", error);
+        if (isActive) {
+          setProduct(editableProduct);
+        }
+      }
+    }
+
+    loadProduct();
+
+    return () => {
+      isActive = false;
+    };
+  }, [id, isEdit]);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const name = String(formData.get("name") || "").trim();
+    const description = String(formData.get("description") || "").trim();
+    const price = Number(formData.get("price"));
+    const quantity = Number(formData.get("quantity"));
+    const imageUrl = String(formData.get("imageUrl") || "").trim();
+    const categoryId = String(formData.get("categoryId") || "").trim();
+
+    if (!name) {
+      setFormError("Vui lòng nhập tên sản phẩm.");
+      return;
+    }
+
+    setIsSaving(true);
+    setFormError("");
+
+    const payload = {
+      name,
+      description,
+      price: Number.isNaN(price) ? 0 : price,
+      quantity: Number.isNaN(quantity) ? 0 : quantity,
+      imageUrl,
+      categoryId,
+    };
+
+    try {
+      if (isEdit && id) {
+        await putProduct(id, payload);
+      } else {
+        await postProduct(payload);
+      }
+      navigate("/admin/products");
+    } catch (error) {
+      console.error("Error saving product:", error);
+      setFormError("API sản phẩm chưa sẵn sàng, mình đã nối sẵn luồng nhưng chưa thể lưu lúc này.");
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!isEdit || !id) {
+      return;
+    }
+
+    const confirmed = window.confirm(`Xóa ${product.name}?`);
+    if (!confirmed) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setFormError("");
+
+    try {
+      await deleteProduct(id);
+      navigate("/admin/products");
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      setFormError("API sản phẩm chưa sẵn sàng, mình đã nối sẵn nút xóa nhưng chưa thể thực thi lúc này.");
+    } finally {
+      setIsDeleting(false);
+    }
+  }
 
   return (
-    <AdminShell title={isEdit ? "Cập nhật sản phẩm" : "Thêm sản phẩm mới"}>
-      <div className="mx-auto w-full max-w-[1120px]">
+    <AdminShell title="Quản lý sản phẩm">
+      <div className="mx-auto w-full max-w-4xl">
         <div className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            {isEdit ? (
-              <Link className="mb-4 inline-flex text-base font-bold text-luxe-mutedText transition hover:text-luxe-ink" to="/admin/products">
-                ← Quay lại Danh sách
-              </Link>
-            ) : (
-              <div className="mb-4 flex gap-8 border-b border-luxe-line text-sm font-bold">
-                <span className="border-b-2 border-luxe-primary pb-3 text-luxe-primary">Sản phẩm</span>
-                <span className="pb-3 text-luxe-mutedText">Đơn hàng</span>
-                <span className="pb-3 text-luxe-mutedText">Khách hàng</span>
-              </div>
-            )}
-            <h1 className="font-display text-4xl font-bold tracking-normal text-luxe-ink">{isEdit ? "" : "Thêm Sản Phẩm Mới"}</h1>
-            {!isEdit ? <p className="mt-2 text-sm text-luxe-mutedText">Điền các thông tin chi tiết dưới đây để đăng tải sản phẩm mới lên cửa hàng Lumina.</p> : null}
+            <Link className="mb-4 inline-flex text-base font-bold text-luxe-mutedText transition hover:text-luxe-ink" to="/admin/products">
+              ← Quay lại danh sách
+            </Link>
+            <h1 className="font-display text-3xl font-bold tracking-normal text-luxe-ink">
+              {isEdit ? `Cập nhật sản phẩm: ${product.name}` : "Thêm Sản Phẩm Mới"}
+            </h1>
+            <p className="mt-2 text-sm text-luxe-mutedText">Dữ liệu được đồng bộ theo schema của API sản phẩm.</p>
           </div>
-          {isEdit ? <ProductFormActions mode={mode} productId={id} /> : null}
         </div>
 
-        {isEdit ? (
-          <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_300px]">
-            <div className="space-y-7">
-              <ProductBasicForm mode={mode} product={product} />
-              <ProductMediaPanel mode={mode} images={product.images} />
-            </div>
-            <ProductSidePanels product={product} />
-          </div>
-        ) : (
-          <div className="space-y-7">
-            <ProductBasicForm mode={mode} product={product} />
-            <ProductCommercialPanel product={product} />
-            <ProductMediaPanel mode={mode} images={product.images} />
-            <ProductFormActions mode={mode} />
-          </div>
-        )}
+        <form id="product-form" onSubmit={handleSubmit} className="space-y-8">
+          {formError ? <p className="border border-[#ba1a1a] bg-[#ba1a1a]/5 px-4 py-3 text-sm text-[#ba1a1a]">{formError}</p> : null}
+          <ProductBasicForm key={`${id || "create"}-${product.name || "blank"}-${categories.length}`} mode={mode} product={product} categories={categories} />
+          <ProductFormActions mode={mode} formId="product-form" onDelete={handleDelete} isSaving={isSaving} isDeleting={isDeleting} />
+        </form>
       </div>
     </AdminShell>
   );

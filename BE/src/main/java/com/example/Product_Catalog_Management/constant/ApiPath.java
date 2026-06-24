@@ -8,14 +8,23 @@ public final class ApiPath {
     public static final String SWAGGER = "/swagger-ui/**";
     public static final String API_DOC = "/v3/api-docs/**";
 
+    public static final String HOME = "/";
+
+    public static final String ACTUATOR = "/actuator/**";
+    public static final String ACTUATOR_HEALTH = "/actuator/health";
+    public static final String ACTUATOR_INFO = "/actuator/info";
+
     public static final String AUTH = API_V1 + "/auth";
-    public static final String AUTH_REFRESH = AUTH + "/refresh";
     public static final String AUTH_SIGN_IN = AUTH + "/signin";
     public static final String AUTH_SIGN_UP = AUTH + "/signup";
     public static final String AUTH_AUTO_SIGN_IN = AUTH + "/auto-signin";
-    public static final String AUTH_SIGN_OUT = AUTH + "/signout";
 
     public static final String USERS = API_V1 + "/users";
     public static final String PRODUCTS = API_V1 + "/products";
+
+    public static final String PRODUCTS_ID = PRODUCTS + "/{id}";
+    public static final String PRODUCTS_SEARCH = PRODUCTS + "/search";
+
     public static final String CATEGORIES = API_V1 + "/categories";
+    public static final String CATEGORIES_ID = CATEGORIES + "/{id}";
 }

@@ -24,6 +24,7 @@ export function LoginForm() {
             const response = await signIn({
                 email: data.email,
                 password: data.password,
+                role: "ADMIN", // hardcode role
             });
 
             authStore.save(response);

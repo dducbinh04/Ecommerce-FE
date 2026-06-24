@@ -7,7 +7,12 @@ spring:
         expiration: ${JWT_EXPIRATION}
         refresh_ttl: ${JWT_REFRESH_TTL}
   config:
-    import: optional:file:.env[.properties]
+    import: optional:file:.env[.properties],optional:none
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
 
   datasource:
     url: ${DB_URL}
@@ -47,9 +52,9 @@ spring:
 
 
 cloudinary:
-  cloud-name: ${CLOUDINARY_CLOUD_NAME}
-  api-key: ${CLOUDINARY_API_KEY}
-  api-secret: ${CLOUDINARY_API_SECRET}
+  cloud_name: ${CLOUDINARY_CLOUD_NAME}
+  api_key: ${CLOUDINARY_API_KEY}
+  api_secret: ${CLOUDINARY_API_SECRET}
 
 
 server:
@@ -59,4 +64,26 @@ app:
   token-blacklist:
     cleanup-interval-ms: ${TOKEN_BLACKLIST_CLEANUP_INTERVAL_MS:86400000}
   cors:
-    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173,http://localhost:8080}
+    allowed_origins: ${ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+    allowed_methods: ${ALLOWED_METHODS:GET,POST,PUT,PATCH,DELETE,OPTIONS}
+    allowed_headers: ${ALLOWED_HEADERS:*}
+
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,loggers,env
+  endpoint:
+    health:
+      show-details: when-authorized
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: ${spring.application.name}
+    version: 1.0.0

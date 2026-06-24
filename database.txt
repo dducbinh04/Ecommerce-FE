@@ -1,0 +1,32 @@
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.users (
+  id uuid NOT NULL,
+  address character varying,
+  birth_date date,
+  created_at timestamp with time zone NOT NULL,
+  email character varying UNIQUE,
+  encrypted_password character varying,
+  full_name character varying,
+  gender character varying CHECK (gender::text = ANY (ARRAY['MALE'::character varying, 'FEMALE'::character varying]::text[])),
+  role character varying CHECK (role::text = ANY (ARRAY['CUSTOMER'::character varying, 'ADMIN'::character varying]::text[])),
+  updated_at timestamp with time zone,
+  CONSTRAINT users_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.categories (
+  id uuid NOT NULL,
+  name character varying,
+  CONSTRAINT categories_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.products (
+  id uuid NOT NULL,
+  description character varying,
+  image_url character varying,
+  name character varying,
+  price integer,
+  quantity integer,
+  category_id uuid,
+  CONSTRAINT products_pkey PRIMARY KEY (id),
+  CONSTRAINT fkog2rp4qthbtt2lfyhfo32lsw9 FOREIGN KEY (category_id) REFERENCES public.categories(id)
+);

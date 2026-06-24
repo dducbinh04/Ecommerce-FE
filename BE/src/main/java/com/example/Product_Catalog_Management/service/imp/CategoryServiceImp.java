@@ -1,13 +1,13 @@
 package com.example.Product_Catalog_Management.service.imp;
 
-import com.example.Product_Catalog_Management.dto.CategoryRequest;
+import com.example.Product_Catalog_Management.dto.request.CategoryRequest;
 import com.example.Product_Catalog_Management.dto.response.CategoryResponse;
 import com.example.Product_Catalog_Management.entity.Category;
+import com.example.Product_Catalog_Management.exception.ConflictException;
 import com.example.Product_Catalog_Management.exception.ResourceNotFoundException;
 import com.example.Product_Catalog_Management.repository.CategoryRepository;
 import com.example.Product_Catalog_Management.service.CategoryService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.service.UnknownUnwrapTypeException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public CategoryResponse createCategory(CategoryRequest request) {
         if (categoryRepository.existsByName(request.getName())) {
-            throw new IllegalArgumentException("Danh mục đã tồn tại");
+            throw new ConflictException("Category already exists");
         }
         Category category = new Category();
         category.setName(request.getName());
@@ -41,14 +41,14 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public CategoryResponse getCategoryById(UUID id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy danh mục với id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Not found category with: " + id));
         return new CategoryResponse(category.getId(), category.getName());
     }
 
     @Override
     public CategoryResponse updateCategory(UUID id, CategoryRequest request) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy danh mục với id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Not found category with: " + id));
 
         category.setName(request.getName());
         Category updatedCategory = categoryRepository.save(category);
@@ -58,7 +58,7 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public void deleteCategory(UUID id) {
         if (!categoryRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Không tìm thấy danh mục với id: " + id);
+            throw new ResourceNotFoundException("Not found category with: " + id);
         }
         categoryRepository.deleteById(id);
     }

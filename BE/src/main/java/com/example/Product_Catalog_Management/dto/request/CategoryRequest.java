@@ -1,10 +1,10 @@
-package com.example.Product_Catalog_Management.dto;
+package com.example.Product_Catalog_Management.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class CategoryRequest {
-    @NotBlank(message = "Refresh token is required")
+    @NotBlank(message = "Category name is required")
     private String name;
 }

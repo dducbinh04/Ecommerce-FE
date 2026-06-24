@@ -21,7 +21,6 @@ import static com.example.Product_Catalog_Management.constant.ApiPath.USERS;
 @RestController
 @RequestMapping(USERS)
 @RequiredArgsConstructor
-@CrossOrigin("http://localhost:5173")
 public class UserController {
 
     private final UserService userService;

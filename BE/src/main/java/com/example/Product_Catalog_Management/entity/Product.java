@@ -1,10 +1,8 @@
 package com.example.Product_Catalog_Management.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Positive;
 import lombok.*;
-import org.springframework.validation.annotation.Validated;
+
 
 import java.util.UUID;
 
@@ -19,11 +17,17 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(nullable = false, unique = true)
     private String name;
     private String description;
     private String imageUrl;
+
+    @Column(nullable = false)
     private Integer price;
+
+    @Column(nullable = false)
     private Integer quantity;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;

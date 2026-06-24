@@ -1,5 +1,7 @@
 package com.example.Product_Catalog_Management;
 
+import com.example.Product_Catalog_Management.config.SecurityConfig;
+import com.example.Product_Catalog_Management.controller.UserController;
 import com.example.Product_Catalog_Management.dto.request.UpdateUserProfileRequest;
 import com.example.Product_Catalog_Management.dto.response.GetUserProfileResponse;
 import com.example.Product_Catalog_Management.dto.response.UpdateUserProfileResponse;
@@ -7,6 +9,8 @@ import com.example.Product_Catalog_Management.enums.Gender;
 import com.example.Product_Catalog_Management.enums.Role;
 import com.example.Product_Catalog_Management.exception.ResourceNotFoundException;
 import com.example.Product_Catalog_Management.security.CustomUserDetails;
+import com.example.Product_Catalog_Management.security.JwtAuthenticationFilter;
+import com.example.Product_Catalog_Management.service.JwtService;
 import com.example.Product_Catalog_Management.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -16,9 +20,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -36,6 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 @DisplayName("UserController Integration Tests")
 class UserControllerIntegrationTest {
 

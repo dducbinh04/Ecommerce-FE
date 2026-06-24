@@ -3,7 +3,7 @@ import { Header } from "../../components/layout/Header";
 import { ProductDetailTabs } from "../../components/product-detail/ProductDetailTabs";
 import { ProductGallery } from "../../components/product-detail/ProductGallery";
 import { ProductPurchasePanel } from "../../components/product-detail/ProductPurchasePanel";
-import { productDetail } from "../../components/product-detail/productDetailData";
+import { ProductDetail } from "../../components/product-detail/productDetailData";
 
 export function ProductDetailPage() {
   return (

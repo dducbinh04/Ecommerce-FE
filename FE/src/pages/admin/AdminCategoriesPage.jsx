@@ -5,7 +5,7 @@ import { CategoryTable } from "../../components/admin-categories/CategoryTable";
 export function AdminCategoriesPage() {
   return (
     <AdminShell title="Quản lý danh mục">
-      <CategoryStats />
+      {/* <CategoryStats /> */}
       <CategoryTable />
     </AdminShell>
   );

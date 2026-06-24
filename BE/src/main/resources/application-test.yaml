@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: Product-Catalog-Management
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+  sql:
+    init:
+      mode: never
+
+  config:
+    import: optional:none
+
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+    show-sql: false
+
+  data:
+    redis:
+      repository:
+        enabled: false
+
+  cache:
+    type: none
+
+app:
+  security:
+    jwt:
+      secret_key: v9K+P2yN+xJ6R3mQ8wL1zT5uB0qA4zX7eC9kG4hJ2sI=
+      expiration: 3600000
+      refresh_ttl: 86400000
+
+cloudinary:
+  cloud-name: test
+  api-key: test
+  api-secret: test
+
+server:
+  port: 0   # random port for test

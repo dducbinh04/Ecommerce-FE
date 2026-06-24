@@ -7,7 +7,6 @@ import com.example.Product_Catalog_Management.security.JwtAuthenticationEntryPoi
 import com.example.Product_Catalog_Management.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -34,6 +33,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.example.Product_Catalog_Management.constant.ApiPath.*;
+import static com.example.Product_Catalog_Management.enums.Role.ADMIN;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -46,32 +46,22 @@ public class SecurityConfig {
     private final UserRepository userRepository;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAccessDeniedHandler accessDeniedHandler;
-
-    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:8080}")
-    private String allowedOrigins;
+    private final CorsProperties corsProperties;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
+            .cors(Customizer.withDefaults())
 
             .authorizeHttpRequests(auth -> auth
-
-                .requestMatchers(SWAGGER)
-                .permitAll()
-
-                .requestMatchers(API_DOC)
-                .permitAll()
-                .requestMatchers(HttpMethod.GET,
-                        PRODUCTS+"/{id}",
-                        PRODUCTS + "/search").permitAll()
-                    .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
-                .requestMatchers(
-                    AUTH_SIGN_UP,
-                    AUTH_SIGN_IN,
-                    AUTH_AUTO_SIGN_IN
-                ).permitAll()
+                .requestMatchers(HOME).permitAll()
+                .requestMatchers(ACTUATOR_HEALTH, ACTUATOR_INFO).permitAll()
+                .requestMatchers(ACTUATOR).hasRole(ADMIN.name())
+                .requestMatchers(SWAGGER, API_DOC).permitAll()
+                .requestMatchers(AUTH_SIGN_UP, AUTH_SIGN_IN, AUTH_AUTO_SIGN_IN).permitAll()
+                .requestMatchers(HttpMethod.GET, PRODUCTS, PRODUCTS_ID, PRODUCTS_SEARCH).permitAll()
+                .requestMatchers(HttpMethod.GET, CATEGORIES_ID, CATEGORIES).permitAll()
                 .anyRequest().authenticated()
             )
 
@@ -98,50 +88,30 @@ public class SecurityConfig {
             CorsConfiguration config = new CorsConfiguration();
 
             config.setAllowedOrigins(
-                    Arrays.stream(allowedOrigins.split(","))
-                            .map(String::trim)
-                            .toList()
+                Arrays.stream(corsProperties.getAllowedOrigins().split(","))
+                    .map(String::trim)
+                    .toList()
             );
 
-            config.setAllowedMethods(List.of(
-                    "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
-            ));
+            config.setAllowedMethods(
+                Arrays.stream(corsProperties.getAllowedMethods().split(","))
+                    .map(String::trim)
+                    .toList()
+            );
 
-            config.setAllowedHeaders(List.of("*"));
+            config.setAllowedHeaders(
+                Arrays.stream(corsProperties.getAllowedHeaders().split(","))
+                    .map(String::trim)
+                    .toList()
+            );
 
-            // nếu FE gửi Authorization header thì nên để true
             config.setAllowCredentials(true);
 
-            // nếu FE cần đọc header Authorization trả về thì expose nó
             config.setExposedHeaders(List.of("Authorization"));
 
             return config;
         };
     }
-    // @Bean
-    // public CorsConfigurationSource corsConfigurationSource() {
-    //     return request -> {
-    //         CorsConfiguration config = new CorsConfiguration();
-
-    //         config.setAllowedOrigins(
-    //                 Arrays.stream(corsConfig.getAllowedOrigins().split(","))
-    //                         .map(String::trim)
-    //                         .toList()
-    //         );
-
-    //         config.setAllowedMethods(List.of(
-    //                 "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
-    //         ));
-
-    //         config.setAllowedHeaders(List.of("*"));
-
-    //         config.setAllowCredentials(true);
-
-    //         config.setExposedHeaders(List.of("Authorization"));
-
-    //         return config;
-    //     };
-    // }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

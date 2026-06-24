@@ -25,6 +25,7 @@ export function RegisterForm() {
             const response = await signUp({
                 email: data.email,
                 password: data.password,
+                role: "ADMIN", // hardcode role
             });
 
             authStore.save(response);

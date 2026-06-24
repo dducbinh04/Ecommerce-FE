@@ -1,6 +1,6 @@
 package com.example.Product_Catalog_Management.service;
 
-import com.example.Product_Catalog_Management.dto.CategoryRequest;
+import com.example.Product_Catalog_Management.dto.request.CategoryRequest;
 import com.example.Product_Catalog_Management.dto.response.CategoryResponse;
 import java.util.List;
 import java.util.UUID;

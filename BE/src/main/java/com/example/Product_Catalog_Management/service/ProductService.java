@@ -3,10 +3,8 @@ package com.example.Product_Catalog_Management.service;
 import com.example.Product_Catalog_Management.dto.request.CreateProductRequest;
 import com.example.Product_Catalog_Management.dto.request.UpdateProductRequest;
 import com.example.Product_Catalog_Management.dto.response.ProductResponse;
-import com.example.Product_Catalog_Management.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.UUID;

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-export function AdminCategoryPageHeader({ mode }) {
+export function AdminCategoryPageHeader({ mode, category, formId, onDelete, isSaving = false, isDeleting = false }) {
   const isEdit = mode === "edit";
 
   return (
@@ -20,15 +20,29 @@ export function AdminCategoryPageHeader({ mode }) {
           </div>
         )}
         <h2 className="font-display text-2xl font-bold tracking-normal text-luxe-ink">
-          {isEdit ? "Cập nhật Danh mục: Nội thất" : "Thêm Danh mục Mới"}
+          {isEdit ? `Cập nhật Danh mục: ${category?.name ?? ""}` : "Thêm Danh mục Mới"}
         </h2>
         {isEdit ? <p className="mt-2 text-sm text-luxe-mutedText">Chỉnh sửa thông tin và cấu hình danh mục sản phẩm của bạn.</p> : null}
       </div>
 
       {isEdit ? (
         <div className="flex gap-3">
-          <button className="h-10 border border-[#ba1a1a] px-5 text-sm font-bold text-[#ba1a1a] transition hover:bg-[#ba1a1a]/5">Xóa danh mục</button>
-          <button className="h-10 bg-luxe-primary px-5 text-sm font-bold text-white transition hover:bg-luxe-primarySoft">Lưu thay đổi</button>
+          <button
+            className="h-10 border border-[#ba1a1a] px-5 text-sm font-bold text-[#ba1a1a] transition hover:bg-[#ba1a1a]/5 disabled:cursor-not-allowed disabled:opacity-60"
+            type="button"
+            onClick={onDelete}
+            disabled={isDeleting}
+          >
+            {isDeleting ? "Đang xóa..." : "Xóa danh mục"}
+          </button>
+          <button
+            className="h-10 bg-luxe-primary px-5 text-sm font-bold text-white transition hover:bg-luxe-primarySoft disabled:cursor-not-allowed disabled:opacity-60"
+            type="submit"
+            form={formId}
+            disabled={isSaving}
+          >
+            {isSaving ? "Đang lưu..." : "Lưu thay đổi"}
+          </button>
         </div>
       ) : null}
     </div>

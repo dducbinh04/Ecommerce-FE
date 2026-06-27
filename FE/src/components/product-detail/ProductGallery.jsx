@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaMagnifyingGlass } from "react-icons/fa6";
 
 export function ProductGallery({ product }) {
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
@@ -29,7 +30,7 @@ export function ProductGallery({ product }) {
             <div className="relative order-1 min-h-[520px] bg-white md:order-2">
                 <img className="h-full min-h-[520px] w-full object-cover object-center" src={galleryImages[selectedImageIndex]} alt={product.name} />
                 <button className="absolute right-5 top-5 grid h-9 w-9 place-items-center rounded-full bg-white text-luxe-ink shadow-sm" aria-label="Phóng to ảnh">
-                    ⌕
+                    <FaMagnifyingGlass />
                 </button>
             </div>
         </section>

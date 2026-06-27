@@ -1,3 +1,5 @@
+import { authStore } from "../../stores/authStore";
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
 
 function toQueryString(params = {}) {
@@ -25,12 +27,15 @@ function toQueryString(params = {}) {
 }
 
 export async function request(path, options = {}) {
-  const { headers: customHeaders = {}, ...restOptions } = options;
+  const { headers: customHeaders = {}, skipAuth = false, ...restOptions } = options;
+  const accessToken = authStore.getAccessToken();
+  const isFormData = restOptions.body instanceof FormData;
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...restOptions,
     headers: {
-      "Content-Type": "application/json",
+      ...(isFormData ? {} : { "Content-Type": "application/json" }),
+      ...(!skipAuth && accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       ...customHeaders,
     },
   });
@@ -64,13 +69,18 @@ export function deleteCategory(id, options = {}) {
   return request(`/api/v1/categories/${id}`, { ...options, method: "DELETE" });
 }
 
+export function getMyProfile(options = {}) {
+  return request("/api/v1/users/me", { ...options, method: "GET" });
+}
+
 
 export function getProducts(params = {}, options = {}) {
   return request(`/api/v1/products${toQueryString(params)}`, { ...options, method: "GET" });
 }
 
 export function postProduct(data, options = {}) {
-  return request("/api/v1/products", { ...options, method: "POST", body: JSON.stringify(data) });
+  const body = data instanceof FormData ? data : JSON.stringify(data);
+  return request("/api/v1/products", { ...options, method: "POST", body });
 }
 
 export function getProductById(id, options = {}) {
@@ -78,7 +88,8 @@ export function getProductById(id, options = {}) {
 }
 
 export function putProduct(id, data, options = {}) {
-  return request(`/api/v1/products/${id}`, { ...options, method: "PUT", body: JSON.stringify(data) });
+  const body = data instanceof FormData ? data : JSON.stringify(data);
+  return request(`/api/v1/products/${id}`, { ...options, method: "PUT", body });
 }
 
 export function deleteProduct(id, options = {}) {

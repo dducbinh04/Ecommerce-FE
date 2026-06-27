@@ -6,6 +6,7 @@ import { ProductDetailTabs } from "../../components/product-detail/ProductDetail
 import { ProductGallery } from "../../components/product-detail/ProductGallery";
 import { ProductPurchasePanel } from "../../components/product-detail/ProductPurchasePanel";
 import { fetchProductById } from "../../services/productService";
+import { LuChevronRight } from "react-icons/lu";
 
 export function ProductDetailPage() {
     const { id } = useParams();
@@ -26,9 +27,7 @@ export function ProductDetailPage() {
             }
         }
 
-        if (id) {
-            loadProduct();
-        }
+        loadProduct();
     }, [id]);
 
     if (loading) {
@@ -40,7 +39,7 @@ export function ProductDetailPage() {
                         Đang tải sản phẩm...
                     </div>
                 </main>
-                <Footer newsletter />
+                <Footer />
             </div>
         );
     }
@@ -54,7 +53,7 @@ export function ProductDetailPage() {
                         {error || "Không tìm thấy sản phẩm."}
                     </div>
                 </main>
-                <Footer newsletter />
+                <Footer />
             </div>
         );
     }
@@ -65,10 +64,14 @@ export function ProductDetailPage() {
             <main className="px-4 py-8 sm:px-6 lg:px-10">
                 <div className="mx-auto max-w-[1280px] border border-luxe-line bg-luxe-surface px-4 py-8 sm:px-8 lg:px-10">
                     <nav className="mb-8 flex flex-wrap items-center gap-2 text-xs font-semibold text-luxe-mutedText">
-                        <span>Trang chủ</span>
-                        <span>›</span>
-                        <span>{product.categoryName || "Sản phẩm"}</span>
-                        <span>›</span>
+                        <a href="/" className="hover:text-luxe-primary">
+                            Trang chủ
+                        </a>
+                        <span><LuChevronRight /></span>
+                        <a href="/products" className="hover:text-luxe-primary">
+                            Sản phẩm
+                        </a>
+                        <span><LuChevronRight /></span>
                         <span className="text-luxe-ink">{product.name}</span>
                     </nav>
 
@@ -80,7 +83,7 @@ export function ProductDetailPage() {
                     <ProductDetailTabs product={product} />
                 </div>
             </main>
-            <Footer newsletter />
+            <Footer />
         </div>
     );
 }

@@ -5,7 +5,7 @@ import { AdminActionButton, AdminRowActions, AdminTableShell } from "../admin-la
 import { adminCategories } from "./categoryAdminData";
 import { deleteCategory, getCategories } from "../../services/api/api.js";
 
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 10;
 
 function normalizeCategories(data) {
   const items = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : null;
@@ -63,6 +63,8 @@ export function CategoryTable() {
     return categories.slice(startIndex, startIndex + PAGE_SIZE);
   }, [categories, currentPage]);
 
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+
   async function handleDelete(categoryId, categoryName) {
     const confirmed = window.confirm(`Xóa ${categoryName}?`);
     if (!confirmed) {
@@ -104,15 +106,15 @@ export function CategoryTable() {
         <table className="w-full min-w-[940px] border-collapse text-left">
           <thead className="bg-luxe-muted text-xs font-bold uppercase tracking-[0.1em] text-luxe-mutedText">
             <tr>
-              <th className="px-6 py-4">ID</th>
+              <th className="px-6 py-4">STT</th>
               <th className="px-6 py-4">Tên danh mục</th>
               <th className="px-6 py-4 text-right">Hành động</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-luxe-line">
-            {paginatedCategories.map((category) => (
+            {paginatedCategories.map((category, index) => (
               <tr key={category.id} className="transition hover:bg-luxe-muted/60">
-                <td className="px-6 py-5">{category.id}</td>
+                <td className="px-6 py-5">{startIndex + index + 1}</td>
                 <td className="px-6 py-5">{category.name}</td>
                 <td className="px-6 py-5">
                   <AdminRowActions

@@ -37,6 +37,14 @@ function normalizeProduct(data) {
   };
 }
 
+function appendProductField(formData, key, value) {
+  if (value === undefined || value === null || value === "") {
+    return;
+  }
+
+  formData.append(key, value);
+}
+
 export function AdminProductFormPage({ mode = "create" }) {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -108,6 +116,7 @@ export function AdminProductFormPage({ mode = "create" }) {
     const quantity = Number(formData.get("quantity"));
     const imageUrl = String(formData.get("imageUrl") || "").trim();
     const categoryId = String(formData.get("categoryId") || "").trim();
+    const imageFile = formData.get("file");
 
     if (!name) {
       setFormError("Vui lòng nhập tên sản phẩm.");
@@ -117,14 +126,18 @@ export function AdminProductFormPage({ mode = "create" }) {
     setIsSaving(true);
     setFormError("");
 
-    const payload = {
-      name,
-      description,
-      price: Number.isNaN(price) ? 0 : price,
-      quantity: Number.isNaN(quantity) ? 0 : quantity,
-      imageUrl,
-      categoryId,
-    };
+    const payload = new FormData();
+    appendProductField(payload, "name", name);
+    appendProductField(payload, "description", description);
+    appendProductField(payload, "price", Number.isNaN(price) ? 0 : price);
+    appendProductField(payload, "quantity", Number.isNaN(quantity) ? 0 : quantity);
+    appendProductField(payload, "categoryId", categoryId);
+
+    if (imageFile instanceof File && imageFile.size > 0) {
+      payload.append("file", imageFile);
+    } else if (imageUrl && !imageUrl.startsWith("data:image/")) {
+      payload.append("imageUrl", imageUrl);
+    }
 
     try {
       if (isEdit && id) {

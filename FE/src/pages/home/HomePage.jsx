@@ -1,7 +1,5 @@
 import { BestSellers } from "../../components/home/BestSellers";
-import { FeaturedCategories } from "../../components/home/FeaturedCategories";
 import { HeroSection } from "../../components/home/HeroSection";
-import { NewsletterSection } from "../../components/home/NewsletterSection";
 import { Footer } from "../../components/layout/Footer";
 import { Header } from "../../components/layout/Header";
 
@@ -11,9 +9,7 @@ export function HomePage() {
             <Header />
             <main>
                 <HeroSection />
-                <FeaturedCategories />
                 <BestSellers />
-                <NewsletterSection />
             </main>
             <div className="h-4 bg-white" />
             <Footer />

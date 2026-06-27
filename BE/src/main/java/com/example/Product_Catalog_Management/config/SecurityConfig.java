@@ -51,34 +51,34 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
 
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HOME).permitAll()
-                .requestMatchers(ACTUATOR_HEALTH, ACTUATOR_INFO).permitAll()
-                .requestMatchers(ACTUATOR).hasRole(ADMIN.name())
-                .requestMatchers(SWAGGER, API_DOC).permitAll()
-                .requestMatchers(AUTH_SIGN_UP, AUTH_SIGN_IN, AUTH_AUTO_SIGN_IN).permitAll()
-                .requestMatchers(HttpMethod.GET, PRODUCTS, PRODUCTS_ID, PRODUCTS_SEARCH).permitAll()
-                .requestMatchers(HttpMethod.GET, CATEGORIES_ID, CATEGORIES).permitAll()
-                .anyRequest().authenticated()
-            )
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HOME).permitAll()
+                        .requestMatchers(ACTUATOR_HEALTH, ACTUATOR_INFO).permitAll()
+                        .requestMatchers(ACTUATOR).hasRole(ADMIN.name())
+                        .requestMatchers(SWAGGER, API_DOC).permitAll()
+                        .requestMatchers(AUTH_SIGN_UP, AUTH_SIGN_IN, AUTH_AUTO_SIGN_IN).permitAll()
+                        .requestMatchers(HttpMethod.GET, PRODUCTS, PRODUCTS_ID, PRODUCTS_SEARCH).permitAll()
+                        .requestMatchers(HttpMethod.GET, CATEGORIES_ID, CATEGORIES).permitAll()
+                        .anyRequest().authenticated()
+                )
 
-            .exceptionHandling(ex -> ex
-                .authenticationEntryPoint(authenticationEntryPoint)
-                .accessDeniedHandler(accessDeniedHandler)
-            )
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
 
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
 
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(
-                jwtAuthFilter,
-                UsernamePasswordAuthenticationFilter.class
-            );
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(
+                        jwtAuthFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
     }
@@ -88,21 +88,21 @@ public class SecurityConfig {
             CorsConfiguration config = new CorsConfiguration();
 
             config.setAllowedOrigins(
-                Arrays.stream(corsProperties.getAllowedOrigins().split(","))
-                    .map(String::trim)
-                    .toList()
+                    Arrays.stream(corsProperties.getAllowedOrigins().split(","))
+                            .map(String::trim)
+                            .toList()
             );
 
             config.setAllowedMethods(
-                Arrays.stream(corsProperties.getAllowedMethods().split(","))
-                    .map(String::trim)
-                    .toList()
+                    Arrays.stream(corsProperties.getAllowedMethods().split(","))
+                            .map(String::trim)
+                            .toList()
             );
 
             config.setAllowedHeaders(
-                Arrays.stream(corsProperties.getAllowedHeaders().split(","))
-                    .map(String::trim)
-                    .toList()
+                    Arrays.stream(corsProperties.getAllowedHeaders().split(","))
+                            .map(String::trim)
+                            .toList()
             );
 
             config.setAllowCredentials(true);
@@ -121,15 +121,15 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return email -> userRepository.findByEmail(email)
-            .map(CustomUserDetails::new)
-            .orElseThrow(() ->
-                new UsernameNotFoundException(email));
+                .map(CustomUserDetails::new)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(email));
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider =
-            new DaoAuthenticationProvider(userDetailsService());
+                new DaoAuthenticationProvider(userDetailsService());
 
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;

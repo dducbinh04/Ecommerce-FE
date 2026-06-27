@@ -21,7 +21,8 @@ export function ProductGrid({ products, viewMode = "grid" }) {
 }
 
 function ListingProductCard({ product, viewMode }) {
-    const imageUrl = product.imageUrl || product.image;
+    const imageUrl = product.imageUrl || product.image_url || product.image || "";
+    const isOutOfStock = Number(product.quantity) <= 0;
 
     const cardContent = (
         <>
@@ -29,6 +30,11 @@ function ListingProductCard({ product, viewMode }) {
                 <Link to={`/products/${product.id}`} className={viewMode === "list" ? "block w-48 shrink-0" : "block aspect-[4/5.3] overflow-hidden bg-luxe-container"}>
                     <img className={`${viewMode === "list" ? "h-40 w-full object-cover" : "h-full w-full object-cover transition duration-500 group-hover:scale-105"}`} src={imageUrl} alt={product.name} />
                 </Link>
+                {isOutOfStock ? (
+                    <span className="absolute left-4 top-4 rounded-full bg-luxe-ink px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white">
+                        Hết hàng
+                    </span>
+                ) : null}
                 <button className="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-full bg-white/90 text-lg text-luxe-ink transition hover:bg-white" aria-label={`Yêu thích ${product.name}`}>
                     <FaRegHeart />
                 </button>
@@ -40,12 +46,6 @@ function ListingProductCard({ product, viewMode }) {
                         {product.name}
                     </h3>
                 </Link>
-                <div className="mt-2 flex items-center gap-1 text-xs">
-                    <span className="text-luxe-gold" aria-label="Đánh giá sản phẩm">
-                        {"★".repeat(5)}
-                    </span>
-                    <span className="text-luxe-mutedText">(5)</span>
-                </div>
                 <div className="mt-2 flex items-baseline gap-3">
                     <p className="font-display text-base font-bold tracking-normal text-luxe-primary">{formatCurrency(product.price)}</p>
                 </div>

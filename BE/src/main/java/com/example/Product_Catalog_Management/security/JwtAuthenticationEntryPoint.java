@@ -21,6 +21,15 @@ public class JwtAuthenticationEntryPoint
         @NonNull AuthenticationException ex
     ) throws IOException {
 
+        String origin = request.getHeader("Origin");
+        if (origin != null) {
+            response.setHeader("Access-Control-Allow-Origin", origin);
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+            response.setHeader("Access-Control-Allow-Headers", "*");
+        }
+
+
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
 

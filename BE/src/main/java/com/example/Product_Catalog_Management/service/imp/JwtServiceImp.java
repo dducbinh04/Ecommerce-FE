@@ -4,8 +4,9 @@ import com.example.Product_Catalog_Management.config.JwtProperties;
 import com.example.Product_Catalog_Management.enums.Role;
 import com.example.Product_Catalog_Management.payload.TokenPayload;
 import com.example.Product_Catalog_Management.service.JwtService;
-import com.example.Product_Catalog_Management.service.RedisService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -24,7 +25,6 @@ import java.util.function.Function;
 public class JwtServiceImp implements JwtService {
 
     private final JwtProperties jwtProperties;
-    private final RedisService redisService;
 
     @Override
     public String generateAccessToken(TokenPayload payload) {
@@ -82,7 +82,12 @@ public class JwtServiceImp implements JwtService {
 
     @Override
     public boolean isTokenValid(String token) {
-        return !extractClaim(token, Claims::getExpiration).before(new Date());
+        try {
+            return !extractClaim(token, Claims::getExpiration).before(new Date());
+        }
+        catch (JwtException e) {
+            return false;
+        }
     }
 
     private String buildToken(Map<String, Object> extraClaims, Object subject, long expiration) {

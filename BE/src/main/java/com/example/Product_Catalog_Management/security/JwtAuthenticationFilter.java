@@ -59,9 +59,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         if (isBlackListed(jwt)) {
-            throw new BadCredentialsException(
-                "Token has been revoked"
-            );
+            filterChain.doFilter(request, response);
+            return;
         }
 
         try {
@@ -103,10 +102,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private boolean isBlackListed(String token) {
-        var jti = jwtService.extractJti(token);
-        var key = "blacklist:" + jti;
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return request.getMethod().equalsIgnoreCase("OPTIONS");
+    }
 
-        return redisService.exists(key);
+    private boolean isBlackListed(String token) {
+        try {
+            var jti = jwtService.extractJti(token);
+            var key = "blacklist:" + jti;
+            return redisService.exists(key);
+        } catch (Exception e) {
+            log.warn("Redis unavailable, skip blacklist check: {}", e.getMessage());
+            return false;
+        }
     }
 }

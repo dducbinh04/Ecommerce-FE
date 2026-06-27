@@ -1,4 +1,28 @@
 import { request } from "./api";
+import { authStore } from "../../stores/authStore";
+
+// export async function request(path, options = {}) {
+//   const { headers: customHeaders = {}, ...restOptions } = options;
+// //   const accessToken = authStore.getAccessToken();
+//   const isFormData = restOptions.body instanceof FormData;
+
+//   const response = await fetch(`${API_BASE_URL}${path}`, {
+//     ...restOptions,
+//     headers: {
+//       ...(isFormData ? {} : { "Content-Type": "application/json" }),
+//     //   ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+//       ...customHeaders,
+//     },
+//   });
+
+//   const payload = await response.json().catch(() => ({}));
+
+//   if (!response.ok) {
+//     throw new Error(payload.message || "Yeu cau that bai.");
+//   }
+
+//   return payload;
+// }
 
 /**
  * Đăng nhập
@@ -9,6 +33,7 @@ import { request } from "./api";
 export function signIn(data, options = {}) {
     return request("/api/v1/auth/signin", {
         ...options,
+        skipAuth: true,
         method: "POST",
         body: JSON.stringify(data),
     });
@@ -35,9 +60,15 @@ export function signUp(data, options = {}) {
  * @returns {void}
  */
 export function signOut(data, options = {}) {
+    const accessToken = authStore.getAccessToken();
+
     return request("/api/v1/auth/signout", {
         ...options,
         method: "POST",
+        headers: {
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+            ...options.headers,
+        },
         body: JSON.stringify(data),
     });
 }

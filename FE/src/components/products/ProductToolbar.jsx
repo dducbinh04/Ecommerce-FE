@@ -23,7 +23,6 @@ export function ProductToolbar({
                     <option value="newest">Mới Nhất</option>
                     <option value="price-asc">Giá Tăng Dần</option>
                     <option value="price-desc">Giá Giảm Dần</option>
-                    <option value="rating">Đánh Giá</option>
                 </select>
                 <div className="flex border border-luxe-line">
                     <button

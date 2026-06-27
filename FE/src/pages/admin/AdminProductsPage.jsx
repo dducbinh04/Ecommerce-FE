@@ -115,14 +115,23 @@ export function AdminProductsPage() {
     };
   }, []);
 
-  const queryParams = useMemo(
+  const listQueryParams = useMemo(
+    () => ({
+      page: currentPage - 1,
+      size: PAGE_SIZE,
+      sortBy: "id",
+      sortDirection: "asc",
+    }),
+    [currentPage]
+  );
+
+  const searchQueryParams = useMemo(
     () => ({
       name: searchTerm.trim() || undefined,
       categoryId: selectedCategory === "all" ? undefined : selectedCategory,
       page: currentPage - 1,
       size: PAGE_SIZE,
-      sortBy: "id",
-      sortDirection: "asc",
+      sort: "id,asc",
     }),
     [searchTerm, selectedCategory, currentPage]
   );
@@ -133,8 +142,8 @@ export function AdminProductsPage() {
     async function loadProducts() {
       setIsLoading(true);
       try {
-        const shouldUseSearch = Boolean(queryParams.name) || Boolean(queryParams.categoryId);
-        const data = shouldUseSearch ? await getProductsBySearch(queryParams) : await getProducts(queryParams);
+        const shouldUseSearch = Boolean(searchQueryParams.name) || Boolean(searchQueryParams.categoryId);
+        const data = shouldUseSearch ? await getProductsBySearch(searchQueryParams) : await getProducts(listQueryParams);
         const normalized = normalizeProductPage(data);
 
         if (isActive) {
@@ -168,7 +177,7 @@ export function AdminProductsPage() {
     return () => {
       isActive = false;
     };
-  }, [queryParams, searchTerm, selectedCategory, currentPage, reloadToken]);
+  }, [listQueryParams, searchQueryParams, searchTerm, selectedCategory, currentPage, reloadToken]);
 
   useEffect(() => {
     if (currentPage > totalPages) {

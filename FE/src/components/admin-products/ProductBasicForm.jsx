@@ -140,6 +140,7 @@ export function ProductBasicForm({ mode, product, categories = [] }) {
                 <label className="block cursor-pointer">
                   <span className="mb-2 block text-sm font-semibold text-luxe-ink">Tải ảnh từ máy lên</span>
                   <input
+                    name="file"
                     type="file"
                     accept="image/*"
                     className="block w-full text-sm text-luxe-mutedText file:mr-4 file:h-10 file:border-0 file:bg-luxe-primary file:px-4 file:text-sm file:font-bold file:text-white hover:file:bg-luxe-primarySoft"

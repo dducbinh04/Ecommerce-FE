@@ -1,10 +1,12 @@
+import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
+
 export function ProductPagination({ currentPage, totalPages, onPageChange }) {
     if (totalPages <= 1) return null;
 
     return (
         <nav className="mt-20 flex items-center justify-center gap-2" aria-label="Phân trang sản phẩm">
             <PageButton label="Trang trước" disabled={currentPage === 1} onClick={() => onPageChange(currentPage - 1)}>
-                ‹
+                <LuChevronLeft />
             </PageButton>
             {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
                 <PageButton
@@ -17,7 +19,7 @@ export function ProductPagination({ currentPage, totalPages, onPageChange }) {
                 </PageButton>
             ))}
             <PageButton label="Trang sau" disabled={currentPage === totalPages} onClick={() => onPageChange(currentPage + 1)}>
-                ›
+                <LuChevronRight />
             </PageButton>
         </nav>
     );

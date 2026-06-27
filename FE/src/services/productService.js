@@ -6,19 +6,17 @@ export async function fetchProducts({
     categoryId,
     name,
     sortBy = "id",
-    sortDirection = "asc",
+    sortDirection = "asc"
 }) {
-    const response = await httpClient.get("/products/search", {
-        params: {
-            page,
-            size,
-            sortBy,
-            sortDirection,
-            ...(categoryId ? { categoryId } : {}),
-            ...(name ? { name } : {}),
-        },
-    });
+    const params = {
+        page,
+        size,
+        sort: `${sortBy},${sortDirection}`,
+        ...(categoryId ? { categoryId } : {}),
+        ...(name ? { name } : {}),
+    };
 
+    const response = await httpClient.get("/products/search", { params });
     return response.data;
 }
 

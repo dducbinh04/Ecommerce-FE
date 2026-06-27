@@ -1,5 +1,7 @@
 import { FiBox, FiGrid, FiLayers, FiLogOut } from "react-icons/fi";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { signOut } from "../../services/api/authService";
+import { authStore } from "../../stores/authStore";
 
 const adminNavItems = [
   { label: "Dashboard", href: "/admin", icon: FiGrid },
@@ -8,6 +10,23 @@ const adminNavItems = [
 ];
 
 export function AdminSidebar() {
+  const navigate = useNavigate();
+
+  async function handleSignOut() {
+    const refreshToken = authStore.getRefreshToken();
+
+    try {
+      if (refreshToken) {
+        await signOut({ refreshToken });
+      }
+    } catch (error) {
+      console.error("Error signing out:", error);
+    } finally {
+      authStore.clear();
+      navigate("/login", { replace: true });
+    }
+  }
+
   return (
     <aside className="flex min-h-screen w-64 shrink-0 flex-col border-r border-luxe-line bg-white">
       <div className="border-b border-luxe-line px-7 py-7">
@@ -46,12 +65,16 @@ export function AdminSidebar() {
 
       <div className="px-5 pb-6">
         <div className="border-t border-luxe-line pt-6">
-          <a className="flex items-center gap-3 text-sm font-semibold text-luxe-mutedText transition hover:text-luxe-ink" href="/login">
+          <button
+            className="flex items-center gap-3 text-sm font-semibold text-luxe-mutedText transition hover:text-luxe-ink"
+            type="button"
+            onClick={handleSignOut}
+          >
             <span aria-hidden="true">
               <FiLogOut />
             </span>
             Sign Out
-          </a>
+          </button>
         </div>
       </div>
     </aside>

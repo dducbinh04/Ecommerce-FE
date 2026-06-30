@@ -26,13 +26,20 @@ function normalizeProduct(data) {
     return blankProduct;
   }
 
+  const images = [
+    ...(Array.isArray(productData.images) ? productData.images : []),
+    ...(Array.isArray(productData.imageUrls) ? productData.imageUrls : []),
+    productData.imageUrl,
+  ].filter(Boolean);
+
   return {
     id: productData.id ?? productData._id ?? "",
     name: productData.name ?? "",
     description: productData.description ?? "",
     price: productData.price ?? "",
     quantity: productData.quantity ?? "",
-    imageUrl: productData.imageUrl ?? "",
+    imageUrl: images[0] ?? "",
+    images,
     categoryId: productData.categoryId ?? "",
   };
 }
@@ -114,9 +121,12 @@ export function AdminProductFormPage({ mode = "create" }) {
     const description = String(formData.get("description") || "").trim();
     const price = Number(formData.get("price"));
     const quantity = Number(formData.get("quantity"));
-    const imageUrl = String(formData.get("imageUrl") || "").trim();
+    const imageUrls = formData
+      .getAll("imageUrls")
+      .map((value) => String(value || "").trim())
+      .filter((value) => value && !value.startsWith("data:image/"));
     const categoryId = String(formData.get("categoryId") || "").trim();
-    const imageFile = formData.get("file");
+    const imageFiles = formData.getAll("files").filter((file) => file instanceof File && file.size > 0);
 
     if (!name) {
       setFormError("Vui lòng nhập tên sản phẩm.");
@@ -133,10 +143,16 @@ export function AdminProductFormPage({ mode = "create" }) {
     appendProductField(payload, "quantity", Number.isNaN(quantity) ? 0 : quantity);
     appendProductField(payload, "categoryId", categoryId);
 
-    if (imageFile instanceof File && imageFile.size > 0) {
-      payload.append("file", imageFile);
-    } else if (imageUrl && !imageUrl.startsWith("data:image/")) {
-      payload.append("imageUrl", imageUrl);
+    if (imageFiles.length > 0) {
+      imageFiles.forEach((file) => payload.append("files", file));
+      if (imageFiles.length === 1) {
+        payload.append("file", imageFiles[0]);
+      }
+    } else if (imageUrls.length > 0) {
+      imageUrls.forEach((url) => payload.append("imageUrls", url));
+      if (imageUrls.length === 1) {
+        payload.append("imageUrl", imageUrls[0]);
+      }
     }
 
     try {

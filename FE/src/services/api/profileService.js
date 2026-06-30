@@ -5,7 +5,7 @@ import { request } from "./api";
  */
 export function getMyProfile(options = {}) {
     return request("/api/v1/users/me", {
-        ...options, 
+        ...options,
         method: "GET",
     });
 }

@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: api-gateway
+    services:
+      auth_service_url: ${AUTH_SERVICE_URL}
+      user_service_url: ${USER_SERVICE_URL}
+      product_service_url: ${PRODUCT_SERVICE_URL}
+      cloudinary_service_url: ${CLOUDINARY_SERVICE_URL}
+      category_service_url: ${CATEGORY_SERVICE_URL}
+
+  config:
+    import: optional:file:.env[.properties]
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+
+  cache:
+    type: redis
+
+server:
+  port: 8080
+
+app:
+  token-blacklist:
+    cleanup-interval-ms: ${TOKEN_BLACKLIST_CLEANUP_INTERVAL_MS:86400000}
+  cors:
+    allowed_origins: ${ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000,https://product-management-system-g4.onrender.com}
+    allowed_methods: ${ALLOWED_METHODS:GET,POST,PUT,PATCH,DELETE,OPTIONS}
+    allowed_headers: ${ALLOWED_HEADERS:*}
+
+management:
+  server:
+    port: 8000
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,loggers,env
+  endpoint:
+    health:
+      show-details: when-authorized
+  info:
+    env:
+      enabled: true
+
+application:
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET_KEY}

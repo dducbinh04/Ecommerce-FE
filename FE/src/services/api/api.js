@@ -69,9 +69,9 @@ export function deleteCategory(id, options = {}) {
   return request(`/api/v1/categories/${id}`, { ...options, method: "DELETE" });
 }
 
-// export function getMyProfile(options = {}) {
-//   return request("/api/v1/users/me", { ...options, method: "GET" });
-// }
+export function getMyProfile(options = {}) {
+  return request("/api/v1/users/me", { ...options, method: "GET" });
+}
 
 
 export function getProducts(params = {}, options = {}) {

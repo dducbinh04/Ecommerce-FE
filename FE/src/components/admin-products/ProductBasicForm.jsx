@@ -13,42 +13,57 @@ function readFileAsDataUrl(file) {
   });
 }
 
+function toImageList(product) {
+  return [
+    ...(Array.isArray(product.images) ? product.images : []),
+    ...(Array.isArray(product.imageUrls) ? product.imageUrls : []),
+    product.imageUrl,
+  ].filter(Boolean);
+}
+
+function splitImageUrls(value) {
+  return value
+    .split(/\r?\n|,/)
+    .map((url) => url.trim())
+    .filter(Boolean);
+}
+
 export function ProductBasicForm({ mode, product, categories = [] }) {
   const isEdit = mode === "edit";
-  const initialImageUrl = product.imageUrl || "";
-  const [imageMode, setImageMode] = useState(initialImageUrl && !isDataUrl(initialImageUrl) ? "url" : "file");
-  const [imagePreview, setImagePreview] = useState(initialImageUrl);
+  const initialImages = toImageList(product);
+  const [imageMode, setImageMode] = useState(initialImages.some((image) => !isDataUrl(image)) ? "url" : "file");
+  const [imagePreviews, setImagePreviews] = useState(initialImages);
 
   useEffect(() => {
-    const nextImageUrl = product.imageUrl || "";
-    setImagePreview(nextImageUrl);
-    setImageMode(nextImageUrl && !isDataUrl(nextImageUrl) ? "url" : "file");
-  }, [product.imageUrl, product.name, isEdit]);
+    const nextImages = toImageList(product);
+    setImagePreviews(nextImages);
+    setImageMode(nextImages.some((image) => !isDataUrl(image)) ? "url" : "file");
+  }, [product.imageUrl, product.images, product.imageUrls, product.name, isEdit]);
 
   const previewLabel = useMemo(() => {
-    if (!imagePreview) {
+    if (imagePreviews.length === 0) {
       return "Chưa có ảnh";
     }
 
-    return imageMode === "file" ? "Ảnh tải lên" : "Ảnh từ URL";
-  }, [imageMode, imagePreview]);
+    return imageMode === "file" ? `${imagePreviews.length} ảnh tải lên` : `${imagePreviews.length} ảnh từ URL`;
+  }, [imageMode, imagePreviews.length]);
 
   async function handleFileChange(event) {
-    const file = event.target.files?.[0];
+    const files = Array.from(event.target.files || []);
 
-    if (!file) {
+    if (files.length === 0) {
       return;
     }
 
-    const dataUrl = await readFileAsDataUrl(file);
+    const dataUrls = await Promise.all(files.map(readFileAsDataUrl));
     setImageMode("file");
-    setImagePreview(dataUrl);
+    setImagePreviews(dataUrls.filter(Boolean));
   }
 
   function handleUrlChange(event) {
-    const nextUrl = event.target.value.trim();
+    const nextUrls = splitImageUrls(event.target.value);
     setImageMode("url");
-    setImagePreview(nextUrl);
+    setImagePreviews(nextUrls);
   }
 
   return (
@@ -111,7 +126,7 @@ export function ProductBasicForm({ mode, product, categories = [] }) {
 
         <div className="md:col-span-2">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <span className="block text-xs font-bold uppercase tracking-[0.12em] text-luxe-mutedText">Ảnh đại diện</span>
+            <span className="block text-xs font-bold uppercase tracking-[0.12em] text-luxe-mutedText">Ảnh sản phẩm</span>
             <div className="flex gap-2">
               <button
                 type="button"
@@ -140,40 +155,52 @@ export function ProductBasicForm({ mode, product, categories = [] }) {
                 <label className="block cursor-pointer">
                   <span className="mb-2 block text-sm font-semibold text-luxe-ink">Tải ảnh từ máy lên</span>
                   <input
-                    name="file"
+                    name="files"
                     type="file"
                     accept="image/*"
+                    multiple
                     className="block w-full text-sm text-luxe-mutedText file:mr-4 file:h-10 file:border-0 file:bg-luxe-primary file:px-4 file:text-sm file:font-bold file:text-white hover:file:bg-luxe-primarySoft"
                     onChange={handleFileChange}
                   />
-                  <p className="mt-2 text-xs text-luxe-mutedText">Ảnh sẽ được chuyển thành chuỗi để gửi lên cùng form.</p>
+                  <p className="mt-2 text-xs text-luxe-mutedText">Có thể chọn nhiều file ảnh trong cùng một lần.</p>
                 </label>
               ) : (
                 <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-luxe-ink">Dán URL ảnh từ mạng ngoài</span>
-                  <input
+                  <textarea
                     name="imageUrlInput"
-                    className="h-11 w-full border border-luxe-line bg-white px-4 text-sm outline-none transition focus:border-luxe-gold"
-                    defaultValue={product.imageUrl}
+                    className="min-h-28 w-full resize-none border border-luxe-line bg-white px-4 py-3 text-sm leading-6 outline-none transition focus:border-luxe-gold"
+                    defaultValue={initialImages.filter((image) => !isDataUrl(image)).join("\n")}
                     onChange={handleUrlChange}
-                    placeholder="https://..."
+                    placeholder="https://...\nhttps://..."
                   />
-                  <p className="mt-2 text-xs text-luxe-mutedText">Có thể dùng link ảnh public như Unsplash, CDN hoặc trang web bên ngoài.</p>
+                  <p className="mt-2 text-xs text-luxe-mutedText">Mỗi URL một dòng hoặc cách nhau bằng dấu phẩy.</p>
                 </label>
               )}
 
-              <input type="hidden" name="imageUrl" value={imagePreview} readOnly />
+              {imageMode === "url"
+                ? imagePreviews.map((image) => <input key={image} type="hidden" name="imageUrls" value={image} readOnly />)
+                : null}
             </div>
 
             <div className="overflow-hidden rounded-2xl border border-luxe-line bg-white">
               <div className="border-b border-luxe-line px-4 py-3">
                 <p className="text-xs font-bold uppercase tracking-[0.12em] text-luxe-mutedText">Xem trước</p>
               </div>
-              <div className="aspect-[4/3] bg-luxe-muted">
-                {imagePreview ? (
-                  <img className="h-full w-full object-cover" src={imagePreview} alt={product.name || "Ảnh sản phẩm"} />
+              <div className="min-h-56 bg-luxe-muted p-3">
+                {imagePreviews.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    {imagePreviews.map((image, index) => (
+                      <img
+                        key={`${image}-${index}`}
+                        className="aspect-square w-full rounded-lg border border-white object-cover"
+                        src={image}
+                        alt={`${product.name || "Ảnh sản phẩm"} ${index + 1}`}
+                      />
+                    ))}
+                  </div>
                 ) : (
-                  <div className="flex h-full items-center justify-center px-6 text-center text-sm text-luxe-mutedText">
+                  <div className="flex min-h-48 items-center justify-center px-6 text-center text-sm text-luxe-mutedText">
                     Chưa có ảnh để xem trước
                   </div>
                 )}
@@ -200,4 +227,3 @@ export function ProductBasicForm({ mode, product, categories = [] }) {
     </section>
   );
 }
-

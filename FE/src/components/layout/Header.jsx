@@ -67,7 +67,7 @@ function AccountArea({ isAuthenticated, user, isLoadingUser }) {
         const initials = user?.initials || getInitials(user);
 
         return (
-            <Link className="ml-2 flex items-center gap-3 rounded-full border border-luxe-line bg-white py-1 pl-1 pr-3 text-luxe-ink transition hover:border-luxe-primary" to="/admin">
+            <Link className="ml-2 flex items-center gap-3 rounded-full border border-luxe-line bg-white py-1 pl-1 pr-3 text-luxe-ink transition hover:border-luxe-primary" to="/profile">
                 <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-luxe-primary text-xs font-bold text-white"><IoMdPerson size={18} /></span>
                 <span className="hidden min-w-0 md:flex md:flex-col md:items-start">
                     <span className="max-w-[160px] truncate text-xs font-bold">{displayName}</span>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { signUp } from "../../services/api/authService";
+import { signUp, refreshToken, startAutoRefresh } from "../../services/api/authService";
 import { authStore } from "../../stores/authStore";
 import { AuthField } from "./AuthField";
 
@@ -29,6 +29,7 @@ export function RegisterForm() {
       });
 
       authStore.save(response);
+      startAutoRefresh();
 
       navigate("/");
     } catch (error) {

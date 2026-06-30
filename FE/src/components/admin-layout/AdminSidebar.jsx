@@ -4,7 +4,7 @@ import { signOut } from "../../services/api/authService";
 import { authStore } from "../../stores/authStore";
 
 const adminNavItems = [
-  { label: "Dashboard", href: "/admin", icon: FiGrid },
+  { label: "Dashboard", href: "/admin/dashboard", icon: FiGrid },
   { label: "Products", href: "/admin/products", icon: FiBox },
   { label: "Categories", href: "/admin/categories", icon: FiLayers },
 ];
@@ -30,7 +30,7 @@ export function AdminSidebar() {
   return (
     <aside className="flex min-h-screen w-64 shrink-0 flex-col border-r border-luxe-line bg-white">
       <div className="border-b border-luxe-line px-7 py-7">
-        <a className="font-display text-2xl font-bold tracking-normal text-luxe-ink" href="/admin/products">
+        <a className="font-display text-2xl font-bold tracking-normal text-luxe-ink" href="/admin/dashboard">
           LUMINA
         </a>
         <p className="mt-1 text-xs font-semibold tracking-[0.12em] text-luxe-mutedText">Management Suite</p>

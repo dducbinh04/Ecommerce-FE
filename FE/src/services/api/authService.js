@@ -48,6 +48,7 @@ export function signIn(data, options = {}) {
 export function signUp(data, options = {}) {
     return request("/api/v1/auth/signup", {
         ...options,
+        skipAuth: true,
         method: "POST",
         body: JSON.stringify(data),
     });
@@ -97,4 +98,47 @@ export function autoSignIn(data, options = {}) {
         method: "POST",
         body: JSON.stringify(data),
     });
+}
+
+let _refreshTimer = null
+const REFRESH_INTERVAL_MS = 10 * 60 * 1000 // 10 phút
+
+export function startAutoRefresh() {
+    // console.log("[autoRefresh] startAutoRefresh() called");
+    stopAutoRefresh();
+
+    _refreshTimer = setInterval(async () => {
+        // console.log("[autoRefresh] Tick!", new Date().toLocaleTimeString());
+        if (!authStore.isLoggedIn()) {
+            stopAutoRefresh();
+            return;
+        }
+
+        try {
+            const tokens = await refreshToken({
+                refreshToken: authStore.getRefreshToken(),
+            });
+            authStore.save({
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken,
+                role: authStore.getRole(),
+            });
+        } catch {
+            stopAutoRefresh();
+            authStore.clear();
+            window.location.href = "/login";
+        }
+    }, REFRESH_INTERVAL_MS);
+
+
+}
+
+/**
+ * Dừng auto refresh
+ */
+export function stopAutoRefresh() {
+    if (_refreshTimer) {
+        clearInterval(_refreshTimer);
+        _refreshTimer = null;
+    }
 }

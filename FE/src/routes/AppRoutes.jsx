@@ -4,19 +4,21 @@ import { AdminCategoriesPage } from "../pages/admin/AdminCategoriesPage";
 import { AdminCategoryFormPage } from "../pages/admin/AdminCategoryFormPage";
 import { AdminProductFormPage } from "../pages/admin/AdminProductFormPage";
 import { AdminProductsPage } from "../pages/admin/AdminProductsPage";
+import { DashboardPage } from "../pages/dashboard/DashboardPage";
 import { LoginPage } from "../pages/auth/LoginPage";
 import { RegisterPage } from "../pages/auth/RegisterPage";
 import { authStore } from "../stores/authStore";
 import { HomePage } from "../pages/home/HomePage";
 import { ProductDetailPage } from "../pages/products/ProductDetailsPage";
 import { ProductsPage } from "../pages/products/ProductsPage";
+import { ProfilePage } from "../pages/profile";
 
 function AdminRoute({ children }) {
   const location = useLocation();
 
-  if (!authStore.isLoggedIn() || authStore.getRole() !== "ADMIN") {
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
+  // if (!authStore.isLoggedIn() || authStore.getRole() !== "ADMIN") {
+  //   return <Navigate to="/login" replace state={{ from: location }} />;
+  // }
 
   return children;
 }
@@ -29,6 +31,7 @@ export function AppRoutes() {
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/products/azure-silk" element={<ProductDetailPage />} />
         <Route path="/products/:id" element={<ProductDetailPage />} />
+        <Route path="profile" element={<ProfilePage />} />
       </Route>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
@@ -36,7 +39,15 @@ export function AppRoutes() {
         path="/admin"
         element={
           <AdminRoute>
-            <Navigate to="/admin/categories" replace />
+            <Navigate to="/admin/dashboard" replace />
+          </AdminRoute>
+        }
+      />
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminRoute>
+            <DashboardPage />
           </AdminRoute>
         }
       />

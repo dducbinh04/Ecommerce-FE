@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { signIn } from "../../services/api/authService";
+import { signIn, refreshToken, startAutoRefresh } from "../../services/api/authService";
 import { authStore } from "../../stores/authStore";
 import { AuthField } from "./AuthField";
 
@@ -28,6 +28,7 @@ export function LoginForm() {
       });
 
       authStore.save(response);
+      startAutoRefresh();
 
       // Redirect
       if (response.role === "ADMIN") {
